@@ -58,7 +58,7 @@ On the other hand, for its correct operation, we must refer to this file in Andr
 ````
 ### Initialize SDK
 The library must be initialized inside Application.onCreate() using your API_KEY provided by mediQuo. Make sure not to use any other library method before you receive a successful response in the listener.
-````
+````kotlin
 class App : Application() {
     private val mediQuoInitListener = object : MediquoInitListener {
         override fun onFailure(message: String?) {
@@ -77,7 +77,7 @@ class App : Application() {
  }
  ````
 ### Authenticate
-````
+````kotlin
 private val mediQuoAuthenticateListener = object : MediquoAuthenticateListener {
     override fun onFailure(message: String?) {
         /* Your authentication has failed */
@@ -93,7 +93,7 @@ private fun authenticateMediQuoSDK() {
 }
 ````
 ### Logout
-````
+````kotlin
 private val mediquoDeAuthenticateListener = object : MediquoDeAuthenticateListener {
     override fun onSuccess() {
         /* Your logout has been successful */
@@ -110,7 +110,7 @@ private fun authenticateMediQuoSDK() {
 ````
 ## Push notifications
 
-````
+````kotlin
 class MediQuoSDKExampleMessagingService : FirebaseMessagingService() {
    override fun onMessageReceived(remoteMessage: RemoteMessage) {
        super.onMessageReceived(remoteMessage)
