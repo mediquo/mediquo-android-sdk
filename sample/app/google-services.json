@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741655732040",
+    "project_id": "testsdkmq",
+    "storage_bucket": "testsdkmq.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741655732040:android:4e7d3277c62c4425155d7d",
+        "android_client_info": {
+          "package_name": "com.example.mediquosdktest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRk574Q4en66vGIKvI8rA-rVzw69292BM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
