@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -54,7 +55,11 @@ class MainActivity : AppCompatActivity() {
         // Set the content for the ComposeView
         composeView.setContent {
             val loggedIn = remember { mutableStateOf(MediquoSDK.getInstance().isAuthenticated == true) }
-            Column (modifier = Modifier.fillMaxSize()){
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+            ) {
                 LoginButton(
                     isLogged = loggedIn.value,
                     onClick = {

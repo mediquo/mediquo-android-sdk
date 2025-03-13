@@ -9,7 +9,7 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
 composeBom = "2024.04.01"
-mediquoSdk = "3.1.0"
+mediquoSdk = "3.3.10"
 googleServices = "4.4.2"
 
 [libraries]
