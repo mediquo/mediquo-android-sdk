@@ -46,15 +46,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (FirebaseApp.getApps(this).isEmpty()) {
-            FirebaseApp.initializeApp(this)
-        }
-
         val composeView: ComposeView = findViewById(R.id.compose_view)
 
         // Set the content for the ComposeView
         composeView.setContent {
-            val loggedIn = remember { mutableStateOf(MediquoSDK.getInstance().isAuthenticated == true) }
+            val loggedIn = remember { mutableStateOf(MediquoSDK.getInstance().isAuthenticated) }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -63,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 LoginButton(
                     isLogged = loggedIn.value,
                     onClick = {
-                        if(FirebaseApp.getApps(this@MainActivity).isEmpty() == false && MediquoSDK.getInstance().isAuthenticated != true){
+                        if(FirebaseApp.getApps(this@MainActivity).isNotEmpty() && !MediquoSDK.getInstance().isAuthenticated){
                             MediquoSDK.authenticateWithToken(getString(R.string.access_token))
                             Toast.makeText(this@MainActivity, "Logged in", Toast.LENGTH_SHORT).show()
                             loggedIn.value = true
