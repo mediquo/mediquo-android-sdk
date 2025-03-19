@@ -75,7 +75,7 @@ class App : Application() {
         MediquoSDK.initialize(this, API_KEY, mediQuoInitListener)
     }
  }
- ````
+````
 ### Authenticate
 ````kotlin
 private val mediQuoAuthenticateListener = object : MediquoAuthenticateListener {
@@ -110,24 +110,36 @@ private fun authenticateMediQuoSDK() {
 ````
 ## Push notifications
 
-````kotlin
-class MediQuoSDKExampleMessagingService : FirebaseMessagingService() {
-   override fun onMessageReceived(remoteMessage: RemoteMessage) {
-       super.onMessageReceived(remoteMessage)
-        
-       /* Your code to process remoteMessage */
-       
-       /* Send remoteMessage to mediQuo SDK */
-       MediquoSDK.getInstance()?.onFirebaseMessageReceived(remoteMessage)
-   }
+In order to receive Push Notifications in your app, make sure that:
+- The `google-services.json` is added to your project. 
+- In the App's `onCreate`, make sure you init Firebase and send to `MediquoSDK` the App's token:
 
-   override fun onNewToken(newToken: String) {
-       super.onNewToken(newToken)
-       /* Register push token to mediQuo SDK */
-       MediquoSDK.getInstance()?.registerPushToken(newToken)
-   }
+```kotlin
+if (FirebaseApp.getApps(this).isEmpty()) {
+    FirebaseApp.initializeApp(this)
 }
-````
+
+FirebaseMessaging.getInstance().token
+    .addOnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.w("FCM", "Fetching FCM token failed", task.exception)
+            return@addOnCompleteListener
+        }
+        val token = task.result
+        MediquoSDK.getInstance()?.registerPushToken(token)
+        Log.d("FCM", "Firebase Token: $token")
+    }
+```
+
+- In the App's Manifest, please add the following snippet:
+
+```xml
+<service android:name="com.mediquo.chat.fcm.MediquoFirebaseMessagingService" android:exported="false">
+	<intent-filter>
+		<action android:name="com.google.firebase.MESSAGING_EVENT" />
+	</intent-filter>
+</service>
+```
 
 ## Proguard rules
 
