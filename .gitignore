@@ -1,2 +1,4 @@
 sample/.idea
 sample/.gradle
+sample/local.properties
+.DS_Store
