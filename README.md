@@ -152,3 +152,52 @@ FirebaseMessaging.getInstance().token
 -dontwarn org.webrtc.**
 -dontwarn com.mediquo.ophiuchus.videocall.**
 ````
+
+## Customization
+
+In order to assign new values ​​to change the application's color styles, you will need to declare some variables in your `colors.xml` file to do that:
+
+### Main colors
+
+````
+<color name="mediquo_primary_color">#000000</color>
+<color name="mediquo_secondary_color">#000000</color>
+<color name="mediquo_accent_color">#000000</color>
+<color name="mediquo_primary_contrast_color">#000000</color>
+<color name="mediquo_notification_color">#000000</color>
+````
+
+The function of each variable is as follows:
+
+`mediquo_primary_color` -> Toolbars background && Medical history icons color  
+`mediquo_primary_contrast_color` -> Toolbars text and back icon  
+`mediquo_secondary_color` -> Speciality label on ProfessionalListFragment && Background professional description on Professional profile  
+`mediquo_accent_color` -> Unread messages badge && Lock icon on Professional list  
+`mediquo_notification_color` -> Accent color to use on push notifications    
+
+### Chat colors
+
+````
+<color name="mediquo_message_text_color_mine">#000000</color>
+<color name="mediquo_message_background_color_mine">#000000</color>
+<color name="mediquo_message_text_color_their">#000000</color>
+<color name="mediquo_message_background_color_their">#000000</color>
+<color name="mediquo_message_text_color_alert">#000000</color>
+<color name="mediquo_message_background_color_alert">#000000</color>
+````
+
+The function of each variable is as follows:
+
+`mediquo_message_text_color_mine` -> Text color of your own message  
+`mediquo_message_background_color_mine` -> Background color of your own message  
+`mediquo_message_text_color_their` -> Text color of a foreign message  
+`mediquo_message_background_color_their` -> Background color of a foreign message  
+`mediquo_message_text_color_alert` -> Text color of a alert message  
+`mediquo_message_background_color_alert` -> Background color of a alert message
+
+### Font customization
+On the same way, if you want to customize the `font` style of the app you will have to declare some new files
+
+First of all, you'll have to create a **New folder** for this files, and to do that you'll have to do **Right Click** on `res` folder and select `New > Android resource directory`, in the Resource type list you'll have to select `Font` and then click `OK`
+
+Now you'll have to create three files named **mediquo_bold**, **mediquo_medium** and **mediquo_regular** to that directory, these files should are `otf` or `ttf` type.
