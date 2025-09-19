@@ -4,7 +4,7 @@ Welcome to MediQuo Android SDK, the easiest way yo integrate the MediQuo functio
 This repository contains a sample app that you can inspect to see how to integrate the MediQuo SDK into your own Application.
 
 ## Prerequisites
-- minSdkVersion 26
+- minSdkVersion 29
 - recommended targetSdk 35
 - recommended compileSdkVersion 35
 - Android Studio Ladybug or later
