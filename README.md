@@ -17,9 +17,18 @@ This repository contains a sample app that you can inspect to see how to integra
 
 ## Usage
 
-### Add dependencies to project level build.gradle
+### Add mandatory dependencies to project level build.gradle
 ````
+plugins {
+    alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.ksp) apply false
+}
+
 allprojects {
+	dependencies {
+        classpath("com.google.gms:google-services:4.3.15")
+    }
+
     repositories {
         google()
         jcenter()
@@ -28,9 +37,47 @@ allprojects {
     }
 }
 ````
-### Add dependencies to app level build.gradle
+
+### Add mandatory dependencies to app level build.gradle
 ````
-implementation 'com.mediquo:mediquo-sdk:[LAST-VERSION]'
+plugins {
+	alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
+}
+
+android {
+	compileOptions {
+		sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+	}
+	kotlinOptions {
+		 jvmTarget = "17"
+	}
+}
+
+dependencies {
+	implementation(libs.hiltAndroid)
+    ksp(libs.hiltCompiler)
+
+	implementation(libs.mediquo.sdk)
+}
+````
+### Configure libs.versions.toml
+````
+[versions]
+mediquoSdk = "[LAST-VERSION]"
+hiltVersion = "2.54"
+kspVersion = "1.9.0-1.0.13"
+
+[libraries]
+hiltAndroid = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
+hiltCompiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion" }
+mediquo-sdk = { group = "com.mediquo", name = "mediquo-sdk", version.ref = "mediquoSdk" }
+
+[plugins]
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
+
 ````
 
 ### Include file_paths.xml file
@@ -151,6 +198,16 @@ FirebaseMessaging.getInstance().token
 -dontwarn com.opentok.**
 -dontwarn org.webrtc.**
 -dontwarn com.mediquo.ophiuchus.videocall.**
+
+-dontwarn com.google.api.client.http.GenericUrl
+-dontwarn com.google.api.client.http.HttpHeaders
+-dontwarn com.google.api.client.http.HttpRequest
+-dontwarn com.google.api.client.http.HttpRequestFactory
+-dontwarn com.google.api.client.http.HttpResponse
+-dontwarn com.google.api.client.http.HttpTransport
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport
+-dontwarn org.joda.time.Instant
 ````
 
 ## Customization
@@ -201,3 +258,30 @@ On the same way, if you want to customize the `font` style of the app you will h
 First of all, you'll have to create a **New folder** for this files, and to do that you'll have to do **Right Click** on `res` folder and select `New > Android resource directory`, in the Resource type list you'll have to select `Font` and then click `OK`
 
 Now you'll have to create three files named **mediquo_bold**, **mediquo_medium** and **mediquo_regular** to that directory, these files should are `otf` or `ttf` type.
+
+### Support Button Config 
+[min version](https://github.com/mediquo/mediquo-android-sdk/releases/tag/3.5.2)
+
+New API for SDK integrators to add a button for custom support on the Professional List screen:
+
+```kotlin
+try {
+  val listener = BaseActivity.OnClickListener {
+      Toast.makeText(context, "Support button clicked!", Toast.LENGTH_SHORT).show()
+  }
+   val buttonConfig = SupportButtonConfiguration(title = "Support Button", image = R.drawable.ic_example, backgroundColor = Color.Red)
+   mediquoSDK.openProfessionalListActivity(this@MainActivity, listener, buttonConfig)
+} catch (e: Throwable) {
+   Log.d("Throwable-exception", e.message.toString())
+}
+````
+
+For the new call to navigate to the ProfessionalList you will need two things, the **listener** to retrieve the callBack of the button, and a **SupportButtonConfiguration** to specify the `title`, `image` **(as a Drawable resource)** or `background` of the new button.
+
+And this will result in this button being rendered:
+
+![Captura de pantalla 2025-05-29 a las 11 34 12](https://github.com/user-attachments/assets/906e2cd8-66b5-45b1-9a71-7662a5af324b)
+
+Otherwise, if you don't want the new button to be added, you can call the navigation as always:
+
+`mediquoSDK.openProfessionalListActivity(this@MainActivity)
