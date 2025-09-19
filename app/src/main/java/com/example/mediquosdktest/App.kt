@@ -8,7 +8,9 @@ import com.mediquo.chat.MediquoAuthenticateListener
 import com.mediquo.chat.MediquoDeAuthenticateListener
 import com.mediquo.chat.MediquoInitListener
 import com.mediquo.chat.MediquoSDK
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class App: Application(){
 
     companion object {
