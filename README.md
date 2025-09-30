@@ -181,11 +181,32 @@ FirebaseMessaging.getInstance().token
 - In the App's Manifest, please add the following snippet:
 
 ```xml
-<service android:name="com.mediquo.chat.fcm.MediquoFirebaseMessagingService" android:exported="false">
-	<intent-filter>
-		<action android:name="com.google.firebase.MESSAGING_EVENT" />
-	</intent-filter>
-</service>
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+<application
+	...
+	<service android:name="com.mediquo.chat.fcm.MediquoFirebaseMessagingService" android:exported="false">
+		<intent-filter>
+			<action android:name="com.google.firebase.MESSAGING_EVENT" />
+		</intent-filter>
+	</service>
+```
+
+- Also you should ask for push permiSsions on Android version 13 and further...
+```kotlin
+private fun askForNotificationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_CODE_NOTIFICATION
+                )
+            }
+        }
+    }
 ```
 
 ## Proguard rules
