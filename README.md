@@ -192,21 +192,21 @@ FirebaseMessaging.getInstance().token
 	</service>
 ```
 
-- Also you should ask for push permiSsions on Android version 13 and further...
+- Also you should ask for push permissions on Android version 13 and later:
 ```kotlin
 private fun askForNotificationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    REQUEST_CODE_NOTIFICATION
-                )
-            }
-        }
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+        != PackageManager.PERMISSION_GRANTED
+    ) {
+      ActivityCompat.requestPermissions(
+        this,
+        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+        REQUEST_CODE_NOTIFICATION
+      )
     }
+  }
+}
 ```
 
 ## Proguard rules
