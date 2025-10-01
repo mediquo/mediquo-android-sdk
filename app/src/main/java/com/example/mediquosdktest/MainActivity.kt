@@ -1,5 +1,8 @@
 package com.example.mediquosdktest
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -11,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.mediquosdktest.App.Companion.TAG
 import com.example.mediquosdktest.ui.LoginButton
 import com.example.mediquosdktest.ui.NavigateButton
@@ -18,8 +23,13 @@ import com.google.firebase.FirebaseApp
 import com.mediquo.chat.MediquoAuthenticateListener
 import com.mediquo.chat.MediquoDeAuthenticateListener
 import com.mediquo.chat.MediquoSDK
+import com.mediquo.main.R
 
 class MainActivity : AppCompatActivity() {
+
+    companion object{
+        private const val REQUEST_CODE_NOTIFICATION = 3
+    }
     private val mediquoSDK: MediquoSDK by lazy { MediquoSDK.getInstance() }
 
     private val mediQuoAuthenticateListener = object : MediquoAuthenticateListener {
@@ -69,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                     onClick = {
                         if(loggedIn.value){
                             mediquoSDK.openProfessionalListActivity(this@MainActivity)
+                            askForNotificationPermissions()
                         }else{
                             Toast.makeText(this@MainActivity, "First you have to log in", Toast.LENGTH_SHORT).show()
                         }
@@ -76,5 +87,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun askForNotificationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_CODE_NOTIFICATION
+                )
+            }
+        }
     }
 }
