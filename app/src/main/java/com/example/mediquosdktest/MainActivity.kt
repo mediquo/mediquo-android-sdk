@@ -23,7 +23,6 @@ import com.google.firebase.FirebaseApp
 import com.mediquo.chat.MediquoAuthenticateListener
 import com.mediquo.chat.MediquoDeAuthenticateListener
 import com.mediquo.chat.MediquoSDK
-import com.mediquo.main.R
 
 class MainActivity : AppCompatActivity() {
 
