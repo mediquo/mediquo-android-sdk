@@ -43,6 +43,7 @@ allprojects {
 plugins {
 	alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -66,8 +67,9 @@ dependencies {
 ````
 [versions]
 mediquoSdk = "[LAST-VERSION]"
+kotlin = "2.2.0"
 hiltVersion = "2.54"
-kspVersion = "1.9.0-1.0.13"
+kspVersion = "2.2.0-2.0.2"
 
 [libraries]
 hiltAndroid = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
@@ -77,6 +79,7 @@ mediquo-sdk = { group = "com.mediquo", name = "mediquo-sdk", version.ref = "medi
 [plugins]
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 ````
 
