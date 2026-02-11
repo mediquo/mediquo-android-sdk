@@ -81,6 +81,7 @@ dependencies {
     ksp(libs.hiltCompiler)
 
     implementation(libs.mediquo.sdk)
+    implementation(libs.twilio)
 
 }
 
