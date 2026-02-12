@@ -12,7 +12,7 @@ composeBom = "2025.10.01"
 googleServices = "4.4.2"
 hiltVersion = "2.54"
 kspVersion = "2.2.0-2.0.2"
-mediquoSdk = "3.7.6"
+mediquoSdk = "3.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
