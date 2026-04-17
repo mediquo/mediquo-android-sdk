@@ -31,23 +31,15 @@ class MainActivity : AppCompatActivity() {
     }
     private val mediquoSDK: MediquoSDK by lazy { MediquoSDK.getInstance() }
 
-    private val mediQuoAuthenticateListener = object : MediquoAuthenticateListener {
-        override fun onFailure(message: String?) {
-            Log.d(TAG, "Failure authenticating MediquoSDK, $message")
-        }
-
-        override fun onSuccess() {
-            Log.d(TAG, "Authenticated MediquoSDK Successfully")
-        }
-    }
-
     private val mediquoDeAuthenticateListener = object : MediquoDeAuthenticateListener {
         override fun onSuccess() {
             Log.d(TAG, "Deauthenticated MediquoSDK Successfully")
+            Toast.makeText(this@MainActivity, "Logged out", Toast.LENGTH_SHORT).show()
         }
 
         override fun onFailure(message: String?) {
             Log.d(TAG, "Failure deauthenticating MediquoSDK, $message")
+            Toast.makeText(this@MainActivity, "Error logging out", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -72,6 +64,9 @@ class MainActivity : AppCompatActivity() {
                             MediquoSDK.authenticateWithToken(getString(R.string.access_token))
                             Toast.makeText(this@MainActivity, "Logged in", Toast.LENGTH_SHORT).show()
                             loggedIn.value = true
+                        } else {
+                            MediquoSDK.deAuthenticate(mediquoDeAuthenticateListener)
+                            loggedIn.value = false
                         }
                     })
                 NavigateButton(
