@@ -15,6 +15,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url = uri("../mediquo-mobile/android/.m2/repository") }
         google()
         mavenCentral()
         mavenLocal()

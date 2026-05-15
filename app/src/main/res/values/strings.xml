@@ -1,6 +1,35 @@
 <resources>
-    <string name="app_name">MediquoSdkTest</string>
-
-    <string name="api_key"></string>
-    <string name="access_token"></string>
+    <string name="app_name">Mediquo SDK Demo</string>
+    <string name="api_key">xuI6zxyDFR0R4oy8</string>
+    <string name="demo_user_id">121235435</string>
+    <string name="demo_title">MediQuo SDK Demo</string>
+    <string name="demo_subtitle_full">Inicializa el SDK y abre las mismas vistas que en iOS.</string>
+    <string name="api_key_label">API key</string>
+    <string name="user_id_label">User ID</string>
+    <string name="initialize_sdk">Initialize SDK</string>
+    <string name="reconnect_sdk">Reconnect SDK</string>
+    <string name="views">Views</string>
+    <string name="show_professional_list">Show professional list</string>
+    <string name="show_medical_history">Show medical history</string>
+    <string name="show_allergies">Show allergies</string>
+    <string name="show_diseases">Show diseases</string>
+    <string name="show_medical_reports">Show medical reports</string>
+    <string name="show_medication">Show medication</string>
+    <string name="show_prescriptions">Show prescriptions</string>
+    <string name="show_video_call">Show incoming videocall</string>
+    <string name="show_audio_call">Show incoming audiocall</string>
+    <string name="show_appointment_details">Show appointment details</string>
+    <string name="show_chat">Show chat</string>
+    <string name="appointment_id_label">Appointment ID</string>
+    <string name="room_id_label">Room ID</string>
+    <string name="support">Support</string>
+    <string name="support_tapped">Support tapped</string>
+    <string name="invalid_credentials">Introduce una API key y un user ID válidos</string>
+    <string name="invalid_appointment_id">Introduce un appointment ID valido</string>
+    <string name="invalid_room_id">Introduce un room ID valido</string>
+    <string name="unavailable_demo">No se puede abrir esta demo</string>
+    <string name="unknown_error">Ha ocurrido un error inesperado</string>
+    <string name="push_body">Tienes una nueva notificación</string>
+    <string name="notification_channel_name">General notifications</string>
+    <string name="notification_channel_description">General app notifications</string>
 </resources>
