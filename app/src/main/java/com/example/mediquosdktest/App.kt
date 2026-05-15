@@ -5,13 +5,11 @@ import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import com.mediquo.sdk.MediQuo
-import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-@HiltAndroidApp
 class App : Application() {
 
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

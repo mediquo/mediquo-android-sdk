@@ -1,9 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
-    alias(libs.plugins.hilt.android)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -53,12 +50,9 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -69,13 +63,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging)
-    implementation(libs.google.firebase.analytics)
-    implementation(libs.firebase.auth)
-
-    implementation(libs.hiltAndroid)
-    ksp(libs.hiltCompiler)
 
     implementation(libs.mediquo.sdk)
 

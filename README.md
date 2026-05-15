@@ -1,311 +1,511 @@
 # MediQuo Android SDK
-Welcome to MediQuo Android SDK, the easiest way yo integrate the MediQuo functionality into your app!
 
-This repository contains a sample app that you can inspect to see how to integrate the MediQuo SDK into your own Application.
+Welcome to MediQuo Android SDK, the easiest way to integrate MediQuo functionality into your Android app.
+
+This repository includes a sample app you can inspect to see a complete integration of the SDK.
 
 ## Prerequisites
-- minSdkVersion 29
-- recommended targetSdk 35
-- recommended compileSdkVersion 35
-- Android Studio Ladybug or later
-- Gradle version 8.7
-- Kotlin version 1.9.24
-- Compose BOM version 2024.06.00
-- Incluse compose material 3, version provided by compose BOM, follow this [instructions](https://developer.android.com/develop/ui/compose/setup#setup-compose)
-- Firebase Cloud Messaging, Firebase version provided by Firebase BOM version 32.1.1, follow this [instructions](https://firebase.google.com/docs/cloud-messaging/android/client)
-- compileOptions set to Java 8
 
-## Usage
+- Android Studio Meerkat or later
+- Android Gradle Plugin `8.9.1` or later
+- Gradle `9.1` or later
+- Kotlin `2.2.0`
+- `minSdk = 29`
+- `compileSdk = 36`
+- `targetSdk = 36` recommended
+- Jetpack Compose enabled in your app
+- Firebase Cloud Messaging if you want push notifications
 
-### Add mandatory dependencies to project level build.gradle
-````
-plugins {
-    alias(libs.plugins.hilt.android) apply false
-    alias(libs.plugins.ksp) apply false
-}
+## Installation
 
-allprojects {
-	dependencies {
-        classpath("com.google.gms:google-services:4.3.15")
-    }
+The SDK is distributed as an Android library artifact.
 
+### 1. Add the MediQuo Maven repository
+
+In your root `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
-        jcenter()
         mavenCentral()
-        maven { url "https://mediquo.jfrog.io/artifactory/android-sdk" }
+        maven { url = uri("https://mediquo.jfrog.io/artifactory/android-sdk") }
+        maven { url = uri("https://mediquo.jfrog.io/artifactory/videocall-android") }
     }
 }
-````
+```
 
-### Add mandatory dependencies to app level build.gradle
-````
-plugins {
-	alias(libs.plugins.hilt.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.compose)
-}
+### 2. Configure your version catalog
 
-android {
-	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-	}
-	kotlinOptions {
-		 jvmTarget = "17"
-	}
-}
+Example `gradle/libs.versions.toml` entries:
 
-dependencies {
-	implementation(libs.hiltAndroid)
-    ksp(libs.hiltCompiler)
-
-	implementation(libs.mediquo.sdk)
-}
-````
-### Configure libs.versions.toml
-````
+```toml
 [versions]
-mediquoSdk = "[LAST-VERSION]"
+mediquoSdk = "[LAST_VERSION]"
 kotlin = "2.2.0"
-hiltVersion = "2.54"
-kspVersion = "2.2.0-2.0.2"
 
 [libraries]
-hiltAndroid = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
-hiltCompiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion" }
 mediquo-sdk = { group = "com.mediquo", name = "mediquo-sdk", version.ref = "mediquoSdk" }
 
 [plugins]
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+```
 
-````
+### 3. Add plugins and dependencies to your app module
 
-### Include file_paths.xml file
-Since Android 11 you must add a file named file_paths.xml in the res/xml directory of your app module for the file attachment to work properly.
+In `app/build.gradle.kts`:
 
-Inside this file, you have to add the following code (make sure to replace your.package.name with the real value):
-````
+```kotlin
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+}
+
+android {
+    namespace = "com.example.yourapp"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "com.example.yourapp"
+        minSdk = 29
+        targetSdk = 36
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation(libs.mediquo.sdk)
+}
+```
+
+### 4. Add the Google Services plugin at project level
+
+If you use Firebase, make sure the plugin is available in the root build:
+
+```kotlin
+plugins {
+    id("com.google.gms.google-services") version "4.4.2" apply false
+}
+```
+
+## Integration
+
+We recommend creating the SDK right after an entitled user logs in.
+
+Before doing that, make sure you have these two values:
+
+- `API_KEY`: provided by mediQuo
+- `USER_ID`: the MediQuo patient identifier associated with the logged-in user
+
+### 1. Create a single SDK instance per user session
+
+```kotlin
+import com.mediquo.sdk.MediQuo
+
+suspend fun createMediQuo(context: Context): MediQuo {
+    return MediQuo.create(
+        context = context,
+        apiKey = API_KEY,
+        userId = USER_ID
+    )
+}
+```
+
+For most applications, we recommend instantiating a single `MediQuo` object at the start of the user session and storing it in your dependency container, `ViewModel`, or session manager.
+
+### 2. Clean up the SDK on logout
+
+When the user logs out, make sure you deauthenticate the SDK:
+
+```kotlin
+try {
+    mediquo.deauthenticateSDK()
+} catch (t: Throwable) {
+    // Handle error if needed
+}
+```
+
+This ensures the next user starts from a clean state.
+
+## Rendering SDK screens
+
+The Android SDK supports three integration styles:
+
+- Compose with `sdkView(...)`
+- Launching a dedicated Activity with `createIntent(...)`
+- Embedding in a `Fragment` with `createFragment(...)`
+
+All available destinations are defined in `MediQuo.ViewKind`.
+
+### Option A. Compose integration
+
+If your app already uses Compose, this is the most direct integration path.
+
+```kotlin
+@Composable
+fun MediquoScreen(mediquo: MediQuo) {
+    mediquo.sdkView(
+        kind = MediQuo.ViewKind.ProfessionalList,
+        modifier = Modifier.fillMaxSize()
+    )
+}
+```
+
+You can also handle the close event when the SDK screen is used as a modal flow:
+
+```kotlin
+mediquo.sdkView(
+    kind = MediQuo.ViewKind.ProfessionalList,
+    modifier = Modifier.fillMaxSize(),
+    onClose = { /* navigate back */ }
+)
+```
+
+### Option B. Launch in a dedicated Activity
+
+If your app is View-based or you prefer a separate screen:
+
+```kotlin
+val intent = mediquo.createIntent(
+    context = this,
+    kind = MediQuo.ViewKind.ProfessionalList()
+)
+startActivity(intent)
+```
+
+### Option C. Embed in a Fragment
+
+If you want to host the SDK inside an existing Fragment-based screen:
+
+```kotlin
+val fragment = mediquo.createFragment(MediQuo.ViewKind.ProfessionalList())
+
+supportFragmentManager.beginTransaction()
+    .replace(R.id.container, fragment)
+    .addToBackStack(null)
+    .commit()
+```
+
+## Available views
+
+These are the main entry points you can open through `MediQuo.ViewKind`:
+
+```kotlin
+MediQuo.ViewKind.ProfessionalList()
+MediQuo.ViewKind.AppointmentsDetails(appointmentId = "123")
+MediQuo.ViewKind.Chat(roomId = 123)
+MediQuo.ViewKind.MedicalHistory
+MediQuo.ViewKind.Allergies
+MediQuo.ViewKind.Diseases
+MediQuo.ViewKind.MedicalReport
+MediQuo.ViewKind.Medication
+MediQuo.ViewKind.Prescription
+MediQuo.ViewKind.Documentation
+MediQuo.ViewKind.Call(callViewModel = ...)
+```
+
+## Support button on Professional List
+
+`ProfessionalList` supports an optional support CTA, similar to iOS:
+
+```kotlin
+mediquo.sdkView(
+    kind = MediQuo.ViewKind.ProfessionalList(
+        supportButton = MediQuo.SupportButtonConfiguration(
+            title = "Support",
+            onTap = {
+                // Open your support flow
+            }
+        )
+    ),
+    modifier = Modifier.fillMaxSize()
+)
+```
+
+You can also customize the button icon and background color:
+
+```kotlin
+MediQuo.SupportButtonConfiguration(
+    title = "Support",
+    icon = myImageVector,
+    backgroundColor = Color.Red,
+    onTap = { /* ... */ }
+)
+```
+
+## Push notifications
+
+The SDK supports Firebase push token registration through:
+
+```kotlin
+mediquo.setPushNotificationToken(MediQuo.NotificationType.Firebase(token))
+```
+
+### 1. Add Firebase to your project
+
+- Add `google-services.json` to your app module
+- Configure Firebase Messaging in your project
+- Apply `com.google.gms.google-services`
+
+You can follow the official Firebase guide here:
+[Firebase Cloud Messaging for Android](https://firebase.google.com/docs/cloud-messaging/android/client)
+
+### 2. Initialize Firebase and obtain the FCM token
+
+Example in your `Application`:
+
+```kotlin
+class App : Application() {
+    private var mediquo: MediQuo? = null
+    private var firebaseToken: String? = null
+
+    override fun onCreate() {
+        super.onCreate()
+
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
+
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) return@addOnCompleteListener
+                firebaseToken = task.result
+                registerPendingPushToken()
+            }
+    }
+
+    fun attachMediQuo(instance: MediQuo) {
+        mediquo = instance
+        registerPendingPushToken()
+    }
+
+    fun updateFirebaseToken(token: String) {
+        firebaseToken = token
+        registerPendingPushToken()
+    }
+
+    private fun registerPendingPushToken() {
+        val sdk = mediquo ?: return
+        val token = firebaseToken ?: return
+
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+            sdk.setPushNotificationToken(MediQuo.NotificationType.Firebase(token))
+        }
+    }
+}
+```
+
+### 3. Refresh the token when Firebase rotates it
+
+```kotlin
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        (application as? App)?.updateFirebaseToken(token)
+    }
+}
+```
+
+### 4. Add the service to your manifest
+
+```xml
+<service
+    android:name=".MyFirebaseMessagingService"
+    android:exported="false">
+    <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+    </intent-filter>
+</service>
+```
+
+### 5. Request notification permission on Android 13+
+
+```kotlin
+private fun askForNotificationPermissions() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                1001
+            )
+        }
+    }
+}
+```
+
+### 6. Handle incoming push payloads
+
+The SDK does not automatically decide how your app should navigate when a push is tapped. Your app owns that behavior.
+
+The recommended pattern is:
+
+- Receive the FCM message in your `FirebaseMessagingService`
+- Show your notification
+- Forward the push extras to your launcher Activity
+- Parse those extras in your app and decide whether to open a chat, appointment, or incoming call UI
+
+For incoming calls, the sample app maps push extras like:
+
+- `type`
+- `call_uuid`
+- `call_room_id`
+- `call_session_id`
+- `call_type`
+- `call_token`
+- `professional_hash`
+- `professional_name`
+- `image`
+
+and builds a `MediQuo.CallViewModel` to open:
+
+```kotlin
+mediquo.sdkView(
+    kind = MediQuo.ViewKind.Call(callViewModel = callViewModel),
+    modifier = Modifier.fillMaxSize()
+)
+```
+
+## Listening to events
+
+To listen to SDK socket events and incoming calls, assign a `MediQuoEventDelegate`:
+
+```kotlin
+val delegate = object : MediQuoEventDelegate {
+    override suspend fun didChangeSocketStatus(
+        isConnected: Boolean,
+        previousIsConnected: Boolean
+    ) {
+        Log.d("MediQuo", "Socket status: $previousIsConnected -> $isConnected")
+    }
+
+    override suspend fun didReceiveCall(call: MediQuo.CallViewModel) {
+        // Present call UI
+    }
+
+    override suspend fun didRejectCall(callId: String) {
+        // Dismiss current call UI if needed
+    }
+}
+
+mediquo.eventDelegate = delegate
+```
+
+Use this delegate if you want to:
+
+- react to WebSocket connection changes
+- present your own incoming call UI
+- dismiss call UI when the remote call is rejected
+
+## Android permissions
+
+Depending on the features you enable, the SDK may require:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```
+
+If your app supports videocalls, also declare the camera feature:
+
+```xml
+<uses-feature
+    android:name="android.hardware.camera"
+    android:required="false" />
+```
+
+## File attachments
+
+To support attachments correctly on Android 11+, add a `FileProvider`.
+
+### 1. Create `res/xml/file_paths.xml`
+
+Replace `your.package.name` with your real application id:
+
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="my_images" path="Android/data/[your.package.name]/files/Pictures" />
-    <external-path name="downloads" path="Android/data/[your.package.name]/files/Download" />
+    <external-path name="my_images" path="Android/data/your.package.name/files/Pictures" />
+    <external-path name="downloads" path="Android/data/your.package.name/files/Download" />
 </paths>
-````
-On the other hand, for its correct operation, we must refer to this file in AndroidManifest.xml, addind the following code:
-````
- <provider
+```
+
+### 2. Register the provider in `AndroidManifest.xml`
+
+```xml
+<provider
     android:name="androidx.core.content.FileProvider"
-    android:authorities="[your.package.name]"
+    android:authorities="${applicationId}"
     android:exported="false"
     android:grantUriPermissions="true">
     <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/file_paths" />
 </provider>
-````
-### Initialize SDK
-The library must be initialized inside Application.onCreate() using your API_KEY provided by mediQuo. Make sure not to use any other library method before you receive a successful response in the listener.
-````kotlin
-class App : Application() {
-    private val mediQuoInitListener = object : MediquoInitListener {
-        override fun onFailure(message: String?) {
-            /* Your initialization has failed */
-        }
-
-        override fun onSuccess() {
-            /* Your initialization has been successful */
-        }
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        MediquoSDK.initialize(this, API_KEY, mediQuoInitListener)
-    }
- }
-````
-### Authenticate
-````kotlin
-private val mediQuoAuthenticateListener = object : MediquoAuthenticateListener {
-    override fun onFailure(message: String?) {
-        /* Your authentication has failed */
-    }
-
-    override fun onSuccess() {
-        /* Your authentication has been successful */
-    }
-}
-
-private fun authenticateMediQuoSDK() {
-    MediquoSDK.authenticate(CLIENT_CODE, mediQuoAuthenticateListener)
-}
-````
-### Logout
-````kotlin
-private val mediquoDeAuthenticateListener = object : MediquoDeAuthenticateListener {
-    override fun onSuccess() {
-        /* Your logout has been successful */
-    }
-
-    override fun onFailure(message: String?) {
-        /* Your logout has failed */
-    }
-}
-
-private fun authenticateMediQuoSDK() {
-    MediquoSDK.deAuthenticate(mediquoDeAuthenticateListener)
-}
-````
-## Push notifications
-
-In order to receive Push Notifications in your app, make sure that:
-- The `google-services.json` is added to your project. 
-- In the App's `onCreate`, make sure you init Firebase and send to `MediquoSDK` the App's token:
-
-```kotlin
-if (FirebaseApp.getApps(this).isEmpty()) {
-    FirebaseApp.initializeApp(this)
-}
-
-FirebaseMessaging.getInstance().token
-    .addOnCompleteListener { task ->
-        if (!task.isSuccessful) {
-            Log.w("FCM", "Fetching FCM token failed", task.exception)
-            return@addOnCompleteListener
-        }
-        val token = task.result
-        MediquoSDK.getInstance()?.registerPushToken(token)
-        Log.d("FCM", "Firebase Token: $token")
-    }
 ```
-
-- In the App's Manifest, please add the following snippet:
-
-```xml
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-<application
-	...
-	<service android:name="com.mediquo.chat.fcm.MediquoFirebaseMessagingService" android:exported="false">
-		<intent-filter>
-			<action android:name="com.google.firebase.MESSAGING_EVENT" />
-		</intent-filter>
-	</service>
-```
-
-- Also you should ask for push permissions on Android version 13 and later:
-```kotlin
-private fun askForNotificationPermissions() {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-        != PackageManager.PERMISSION_GRANTED
-    ) {
-      ActivityCompat.requestPermissions(
-        this,
-        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-        REQUEST_CODE_NOTIFICATION
-      )
-    }
-  }
-}
-```
-
-## Proguard rules
-
-````
--keep class com.opentok.** { *; }
--keep class org.webrtc.** { *; }
--keep class com.mediquo.ophiuchus.videocall.** { *; }
--keep class org.otwebrtc.** { *; }
--dontwarn com.opentok.**
--dontwarn org.webrtc.**
--dontwarn com.mediquo.ophiuchus.videocall.**
-
--dontwarn com.google.api.client.http.GenericUrl
--dontwarn com.google.api.client.http.HttpHeaders
--dontwarn com.google.api.client.http.HttpRequest
--dontwarn com.google.api.client.http.HttpRequestFactory
--dontwarn com.google.api.client.http.HttpResponse
--dontwarn com.google.api.client.http.HttpTransport
--dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
--dontwarn com.google.api.client.http.javanet.NetHttpTransport
--dontwarn org.joda.time.Instant
-````
 
 ## Customization
 
-In order to assign new values ​​to change the application's color styles, you will need to declare some variables in your `colors.xml` file to do that:
+The SDK uses the host app theme and its own internal design tokens. The most common customization point exposed to integrators today is the optional support button in `ProfessionalList`.
 
-### Main colors
+If you need deeper theming or UI customization, please contact mediQuo or open an issue in the repository.
 
-````
-<color name="mediquo_primary_color">#000000</color>
-<color name="mediquo_secondary_color">#000000</color>
-<color name="mediquo_accent_color">#000000</color>
-<color name="mediquo_primary_contrast_color">#000000</color>
-<color name="mediquo_notification_color">#000000</color>
-````
+## Troubleshooting
 
-The function of each variable is as follows:
+### Build fails because of outdated Android toolchain
 
-`mediquo_primary_color` -> Toolbars background && Medical history icons color  
-`mediquo_primary_contrast_color` -> Toolbars text and back icon  
-`mediquo_secondary_color` -> Speciality label on ProfessionalListFragment && Background professional description on Professional profile  
-`mediquo_accent_color` -> Unread messages badge && Lock icon on Professional list  
-`mediquo_notification_color` -> Accent color to use on push notifications    
+If Gradle reports that dependencies require newer Android APIs or a newer Android Gradle Plugin, make sure your app uses:
 
-### Chat colors
+- `compileSdk = 36`
+- Android Gradle Plugin `8.9.1` or newer
+- Kotlin `2.2.0`
 
-````
-<color name="mediquo_message_text_color_mine">#000000</color>
-<color name="mediquo_message_background_color_mine">#000000</color>
-<color name="mediquo_message_text_color_their">#000000</color>
-<color name="mediquo_message_background_color_their">#000000</color>
-<color name="mediquo_message_text_color_alert">#000000</color>
-<color name="mediquo_message_background_color_alert">#000000</color>
-````
+### Push token is never registered
 
-The function of each variable is as follows:
+Check the following:
 
-`mediquo_message_text_color_mine` -> Text color of your own message  
-`mediquo_message_background_color_mine` -> Background color of your own message  
-`mediquo_message_text_color_their` -> Text color of a foreign message  
-`mediquo_message_background_color_their` -> Background color of a foreign message  
-`mediquo_message_text_color_alert` -> Text color of a alert message  
-`mediquo_message_background_color_alert` -> Background color of a alert message
+- `google-services.json` is present in the app module
+- Firebase initializes successfully
+- you call `setPushNotificationToken(...)` after both the SDK instance and the FCM token are available
+- your `FirebaseMessagingService.onNewToken(...)` updates the stored token
 
-### Font customization
-On the same way, if you want to customize the `font` style of the app you will have to declare some new files
+### Incoming calls are not shown
 
-First of all, you'll have to create a **New folder** for this files, and to do that you'll have to do **Right Click** on `res` folder and select `New > Android resource directory`, in the Resource type list you'll have to select `Font` and then click `OK`
+Check the following:
 
-Now you'll have to create three files named **mediquo_bold**, **mediquo_medium** and **mediquo_regular** to that directory, these files should are `otf` or `ttf` type.
+- your app sets `mediquo.eventDelegate`
+- your app handles `didReceiveCall(...)`
+- if the call comes from a push tap, your launcher Activity reads the push extras and transforms them into a `MediQuo.CallViewModel`
 
-### Support Button Config 
-[min version](https://github.com/mediquo/mediquo-android-sdk/releases/tag/3.5.2)
+## Sample app
 
-New API for SDK integrators to add a button for custom support on the Professional List screen:
+You can inspect the sample app in this repository for a working end-to-end reference, including:
 
-```kotlin
-try {
-  val listener = BaseActivity.OnClickListener {
-      Toast.makeText(context, "Support button clicked!", Toast.LENGTH_SHORT).show()
-  }
-   val buttonConfig = SupportButtonConfiguration(title = "Support Button", image = R.drawable.ic_example, backgroundColor = Color.Red)
-   mediquoSDK.openProfessionalListActivity(this@MainActivity, listener, buttonConfig)
-} catch (e: Throwable) {
-   Log.d("Throwable-exception", e.message.toString())
-}
-````
+- SDK initialization
+- full demo navigation
+- push token registration
+- incoming call handling
 
-For the new call to navigate to the ProfessionalList you will need two things, the **listener** to retrieve the callBack of the button, and a **SupportButtonConfiguration** to specify the `title`, `image` **(as a Drawable resource)** or `background` of the new button.
+## Need help?
 
-And this will result in this button being rendered:
-
-![Captura de pantalla 2025-05-29 a las 11 34 12](https://github.com/user-attachments/assets/906e2cd8-66b5-45b1-9a71-7662a5af324b)
-
-Otherwise, if you don't want the new button to be added, you can call the navigation as always:
-
-`mediquoSDK.openProfessionalListActivity(this@MainActivity)
+If you need any extra integration point or customization capability, please contact mediQuo.
