@@ -9,7 +9,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.mediquosdktest"
+        applicationId = "com.mediquo.example.sdk"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
@@ -22,6 +22,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(
