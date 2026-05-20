@@ -1,8 +1,8 @@
 # MediQuo Android SDK
 
-Welcome to MediQuo Android SDK, the easiest way to integrate MediQuo functionality into your Android app.
+Welcome to the MediQuo Android SDK, the easiest way to integrate MediQuo functionality into your Android app.
 
-This repository includes a sample app you can inspect to see a complete integration of the SDK.
+This repository includes a sample app you can inspect to see a complete end-to-end integration.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ This repository includes a sample app you can inspect to see a complete integrat
 
 The SDK is distributed as an Android library artifact.
 
-### 1. Add the MediQuo Maven repository
+### 1. Add the MediQuo Maven repositories
 
 In your root `settings.gradle.kts`:
 
@@ -82,6 +82,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 dependencies {
@@ -108,9 +112,10 @@ Before doing that, make sure you have these two values:
 - `API_KEY`: provided by mediQuo
 - `USER_ID`: the MediQuo patient identifier associated with the logged-in user
 
-### 1. Create a single SDK instance per user session
+### Create a single SDK instance per user session
 
 ```kotlin
+import android.content.Context
 import com.mediquo.sdk.MediQuo
 
 suspend fun createMediQuo(context: Context): MediQuo {
@@ -124,19 +129,49 @@ suspend fun createMediQuo(context: Context): MediQuo {
 
 For most applications, we recommend instantiating a single `MediQuo` object at the start of the user session and storing it in your dependency container, `ViewModel`, or session manager.
 
-### 2. Clean up the SDK on logout
-
-When the user logs out, make sure you deauthenticate the SDK:
+### Clean up the SDK on logout
 
 ```kotlin
 try {
     mediquo.deauthenticateSDK()
 } catch (t: Throwable) {
-    // Handle error if needed
+    // Handle the error if needed
 }
 ```
 
 This ensures the next user starts from a clean state.
+
+## Quick start
+
+This is the smallest useful integration path for a Compose app:
+
+```kotlin
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            var sdk by remember { mutableStateOf<MediQuo?>(null) }
+
+            LaunchedEffect(Unit) {
+                sdk = MediQuo.create(
+                    context = this@MainActivity,
+                    apiKey = API_KEY,
+                    userId = USER_ID
+                )
+            }
+
+            sdk?.sdkView(
+                kind = MediQuo.ViewKind.ProfessionalList(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+```
+
+If you already have your own session and dependency setup, move the SDK creation there and keep a single instance alive for the logged-in user.
 
 ## Rendering SDK screens
 
@@ -156,7 +191,7 @@ If your app already uses Compose, this is the most direct integration path.
 @Composable
 fun MediquoScreen(mediquo: MediQuo) {
     mediquo.sdkView(
-        kind = MediQuo.ViewKind.ProfessionalList,
+        kind = MediQuo.ViewKind.ProfessionalList(),
         modifier = Modifier.fillMaxSize()
     )
 }
@@ -165,11 +200,14 @@ fun MediquoScreen(mediquo: MediQuo) {
 You can also handle the close event when the SDK screen is used as a modal flow:
 
 ```kotlin
-mediquo.sdkView(
-    kind = MediQuo.ViewKind.ProfessionalList,
-    modifier = Modifier.fillMaxSize(),
-    onClose = { /* navigate back */ }
-)
+@Composable
+fun MediquoScreen(mediquo: MediQuo, onClose: () -> Unit) {
+    mediquo.sdkView(
+        kind = MediQuo.ViewKind.ProfessionalList(),
+        modifier = Modifier.fillMaxSize(),
+        onClose = onClose
+    )
+}
 ```
 
 ### Option B. Launch in a dedicated Activity
@@ -181,6 +219,7 @@ val intent = mediquo.createIntent(
     context = this,
     kind = MediQuo.ViewKind.ProfessionalList()
 )
+
 startActivity(intent)
 ```
 
@@ -215,9 +254,9 @@ MediQuo.ViewKind.Documentation
 MediQuo.ViewKind.Call(callViewModel = ...)
 ```
 
-## Support button on Professional List
+## Integration examples
 
-`ProfessionalList` supports an optional support CTA, similar to iOS:
+### Open the professional list with a support CTA
 
 ```kotlin
 mediquo.sdkView(
@@ -233,14 +272,53 @@ mediquo.sdkView(
 )
 ```
 
-You can also customize the button icon and background color:
+You can also customize the icon and background color:
 
 ```kotlin
 MediQuo.SupportButtonConfiguration(
     title = "Support",
-    icon = myImageVector,
+    icon = Icons.AutoMirrored.Outlined.Help,
     backgroundColor = Color.Red,
     onTap = { /* ... */ }
+)
+```
+
+Rendered support button example:
+
+![Support button example](https://github.com/user-attachments/assets/906e2cd8-66b5-45b1-9a71-7662a5af324b)
+
+### Open a chat directly
+
+```kotlin
+val roomId = 123
+
+mediquo.sdkView(
+    kind = MediQuo.ViewKind.Chat(roomId),
+    modifier = Modifier.fillMaxSize()
+)
+```
+
+### Open appointment details
+
+```kotlin
+val appointmentId = "appointment-id"
+
+mediquo.sdkView(
+    kind = MediQuo.ViewKind.AppointmentsDetails(appointmentId),
+    modifier = Modifier.fillMaxSize()
+)
+```
+
+### Present an incoming call screen
+
+```kotlin
+mediquo.sdkView(
+    kind = MediQuo.ViewKind.Call(
+        callViewModel = callViewModel,
+        closeHandler = { /* clear your call state */ }
+    ),
+    modifier = Modifier.fillMaxSize(),
+    onClose = { /* clear your call state */ }
 )
 ```
 
@@ -267,6 +345,7 @@ Example in your `Application`:
 
 ```kotlin
 class App : Application() {
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var mediquo: MediQuo? = null
     private var firebaseToken: String? = null
 
@@ -299,7 +378,7 @@ class App : Application() {
         val sdk = mediquo ?: return
         val token = firebaseToken ?: return
 
-        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+        applicationScope.launch {
             sdk.setPushNotificationToken(MediQuo.NotificationType.Firebase(token))
         }
     }
@@ -505,6 +584,12 @@ You can inspect the sample app in this repository for a working end-to-end refer
 - full demo navigation
 - push token registration
 - incoming call handling
+
+The most relevant files are:
+
+- `app/src/main/java/com/example/mediquosdktest/App.kt`
+- `app/src/main/java/com/example/mediquosdktest/MainActivity.kt`
+- `app/src/main/AndroidManifest.xml`
 
 ## Need help?
 
