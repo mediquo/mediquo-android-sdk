@@ -9,7 +9,7 @@ espressoCore = "3.5.1"
 activityCompose = "1.11.0"
 composeBom = "2025.09.01"
 googleServices = "4.4.2"
-mediquoSdk = "sdk-local-0.6"
+mediquoSdk = "26.5.0.beta3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
