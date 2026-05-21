@@ -15,12 +15,10 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url = uri("../mediquo-mobile/android/.m2/repository") }
         google()
         mavenCentral()
         mavenLocal()
         maven { url = uri("https://mediquo.jfrog.io/artifactory/android-sdk") }
-        maven { url = uri("https://mediquo.jfrog.io/artifactory/videocall-android") }
     }
 }
 
