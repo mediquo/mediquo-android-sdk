@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ import androidx.core.content.ContextCompat
 import com.mediquo.sdk.MediQuo
 import com.mediquo.sdk.MediQuoEventDelegate
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import java.net.URI
 
 class MainActivity : ComponentActivity() {
@@ -184,6 +186,8 @@ private fun SDKDemoApp(
     var appointmentId by rememberSaveable { mutableStateOf("") }
     var roomId by rememberSaveable { mutableStateOf("") }
     var uiErrorMessage by remember { mutableStateOf<String?>(null) }
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
     val sdkInitializationState by app.sdkInitializationState().collectAsState()
     val incomingCallViewModel by DemoIncomingCallStore.incomingCallViewModel.collectAsState()
     val eventDelegate = remember {
@@ -206,7 +210,8 @@ private fun SDKDemoApp(
     }
 
     val activeSdk = sdkInitializationState.sdk
-    val errorMessage = uiErrorMessage ?: sdkInitializationState.errorMessage
+    val validationErrorMessage = uiErrorMessage
+    val sdkErrorMessage = sdkInitializationState.errorMessage
     val isLoading = sdkInitializationState.isLoading
 
     LaunchedEffect(activeSdk, eventDelegate) {
@@ -231,6 +236,9 @@ private fun SDKDemoApp(
                 DemoDestination.AppointmentDetails -> context.getString(R.string.invalid_appointment_id)
                 DemoDestination.Chat -> context.getString(R.string.invalid_room_id)
                 else -> context.getString(R.string.unavailable_demo)
+            }
+            scope.launch {
+                scrollState.animateScrollTo(0)
             }
             return
         }
@@ -279,7 +287,7 @@ private fun SDKDemoApp(
                 .fillMaxSize()
                 .then(
                     if (activeSdk != null) {
-                        Modifier.verticalScroll(rememberScrollState())
+                        Modifier.verticalScroll(scrollState)
                     } else {
                         Modifier
                     }
@@ -297,7 +305,14 @@ private fun SDKDemoApp(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            errorMessage?.let {
+            validationErrorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            sdkErrorMessage?.let {
                 Text(
                     text = it,
                     color = MaterialTheme.colorScheme.error
