@@ -404,7 +404,7 @@ private object DemoIncomingCallStore {
             type = if (callType.equals("video", ignoreCase = true)) {
                 MediQuo.CallViewModel.CallType.VIDEO
             } else {
-                MediQuo.CallViewModel.CallType.AUDIO
+                return
             },
             professional = MediQuo.CallViewModel.Professional(
                 id = professionalHash,
@@ -444,7 +444,6 @@ enum class DemoDestination(val titleRes: Int) {
     Medication(R.string.show_medication),
     Prescription(R.string.show_prescriptions),
     VideoCall(R.string.show_video_call),
-    AudioCall(R.string.show_audio_call),
     AppointmentDetails(R.string.show_appointment_details),
     Chat(R.string.show_chat)
 }
@@ -471,11 +470,6 @@ private fun DemoDestination.toViewKind(
         DemoDestination.Prescription -> MediQuo.ViewKind.Prescription
         DemoDestination.VideoCall -> MediQuo.ViewKind.Call(
             callViewModel = MediQuo.CallViewModel.videoMock,
-            closeHandler = onClose
-        )
-
-        DemoDestination.AudioCall -> MediQuo.ViewKind.Call(
-            callViewModel = MediQuo.CallViewModel.audioMock,
             closeHandler = onClose
         )
 
