@@ -30,13 +30,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -47,7 +48,6 @@ import androidx.core.content.ContextCompat
 import com.mediquo.sdk.MediQuo
 import com.mediquo.sdk.MediQuoEventDelegate
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import java.net.URI
 
 class MainActivity : ComponentActivity() {
@@ -91,22 +91,101 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+class DemoHostActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+        val destination = intent.getStringExtra(EXTRA_DESTINATION)
+            ?.let(DemoDestination::valueOf)
+        val appointmentId = intent.getStringExtra(EXTRA_APPOINTMENT_ID).orEmpty()
+        val roomId = intent.getStringExtra(EXTRA_ROOM_ID).orEmpty()
+        val sdk = (applicationContext as? App)?.currentSdk()
+
+        setContent {
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    val viewKind = remember(destination, appointmentId, roomId) {
+                        destination?.toViewKind(
+                            appointmentId = appointmentId,
+                            roomId = roomId,
+                            onSupportTapped = {
+                                Toast.makeText(
+                                    this@DemoHostActivity,
+                                    getString(R.string.support_tapped),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            onClose = { finish() }
+                        )
+                    }
+
+                    if (sdk == null || destination == null || viewKind == null) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .windowInsetsPadding(WindowInsets.safeDrawing)
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = when {
+                                    sdk == null -> getString(R.string.sdk_not_ready)
+                                    destination == DemoDestination.AppointmentDetails -> getString(R.string.invalid_appointment_id)
+                                    destination == DemoDestination.Chat -> getString(R.string.invalid_room_id)
+                                    else -> getString(R.string.unavailable_demo)
+                                }
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .windowInsetsPadding(WindowInsets.safeDrawing)
+                        ) {
+                            sdk.sdkView(
+                                kind = viewKind,
+                                modifier = Modifier.fillMaxSize(),
+                                onClose = { finish() }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val EXTRA_DESTINATION = "extra_destination"
+        private const val EXTRA_APPOINTMENT_ID = "extra_appointment_id"
+        private const val EXTRA_ROOM_ID = "extra_room_id"
+
+        fun createIntent(
+            context: android.content.Context,
+            destination: DemoDestination,
+            appointmentId: String,
+            roomId: String
+        ): Intent {
+            return Intent(context, DemoHostActivity::class.java)
+                .putExtra(EXTRA_DESTINATION, destination.name)
+                .putExtra(EXTRA_APPOINTMENT_ID, appointmentId)
+                .putExtra(EXTRA_ROOM_ID, roomId)
+        }
+    }
+}
+
 @Composable
 private fun SDKDemoApp(
     onAskNotificationPermissions: () -> Unit
 ) {
     val context = LocalContext.current
-    val key = stringResource(R.string.api_key)
-    var apiKey by rememberSaveable { mutableStateOf(key) }
-    var userId by rememberSaveable { mutableStateOf(context.getString(R.string.demo_user_id)) }
+    val app = context.applicationContext as App
     var appointmentId by rememberSaveable { mutableStateOf("") }
     var roomId by rememberSaveable { mutableStateOf("") }
-    var sdk by remember { mutableStateOf<MediQuo?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var currentDemo by remember { mutableStateOf<DemoDestination?>(null) }
+    var uiErrorMessage by remember { mutableStateOf<String?>(null) }
+    val sdkInitializationState by app.sdkInitializationState().collectAsState()
     val incomingCallViewModel by DemoIncomingCallStore.incomingCallViewModel.collectAsState()
-    val scope = rememberCoroutineScope()
     val eventDelegate = remember {
         object : MediQuoEventDelegate {
             override suspend fun didChangeSocketStatus(
@@ -126,31 +205,47 @@ private fun SDKDemoApp(
         }
     }
 
-    fun loadSdk() {
-        errorMessage = null
-        isLoading = true
-        scope.launch {
-            runCatching {
-                MediQuo.create(
-                    context = context,
-                    apiKey = apiKey.trim(),
-                    userId = userId.trim()
-                )
-            }.onSuccess {
-                it.eventDelegate = eventDelegate
-                sdk = it
-                (context.applicationContext as? App)?.attachSdk(it)
-                onAskNotificationPermissions()
-            }.onFailure {
-                sdk = null
-                errorMessage = it.message ?: context.getString(R.string.unknown_error)
-            }
-            isLoading = false
+    val activeSdk = sdkInitializationState.sdk
+    val errorMessage = uiErrorMessage ?: sdkInitializationState.errorMessage
+    val isLoading = sdkInitializationState.isLoading
+
+    LaunchedEffect(activeSdk, eventDelegate) {
+        activeSdk?.let {
+            it.eventDelegate = eventDelegate
+            uiErrorMessage = null
+            onAskNotificationPermissions()
         }
     }
 
-    val activeSdk = sdk
-    val activeDemo = currentDemo
+    fun openDemo(destination: DemoDestination) {
+        if (activeSdk == null) return
+
+        val isInputValid = when (destination) {
+            DemoDestination.AppointmentDetails -> appointmentId.trim().isNotEmpty()
+            DemoDestination.Chat -> roomId.trim().toIntOrNull() != null
+            else -> true
+        }
+
+        if (!isInputValid) {
+            uiErrorMessage = when (destination) {
+                DemoDestination.AppointmentDetails -> context.getString(R.string.invalid_appointment_id)
+                DemoDestination.Chat -> context.getString(R.string.invalid_room_id)
+                else -> context.getString(R.string.unavailable_demo)
+            }
+            return
+        }
+
+        uiErrorMessage = null
+        context.startActivity(
+            DemoHostActivity.createIntent(
+                context = context,
+                destination = destination,
+                appointmentId = appointmentId,
+                roomId = roomId
+            )
+        )
+    }
+
     if (activeSdk != null && incomingCallViewModel != null) {
         BackHandler(enabled = false) {}
 
@@ -173,138 +268,94 @@ private fun SDKDemoApp(
         return
     }
 
-    if (activeSdk != null && activeDemo != null) {
-        val viewKind = activeDemo.toViewKind(
-            appointmentId = appointmentId,
-            roomId = roomId,
-            onSupportTapped = {
-                Toast.makeText(context, context.getString(R.string.support_tapped), Toast.LENGTH_SHORT)
-                    .show()
-            },
-            onClose = { currentDemo = null }
-        )
-
-        if (viewKind == null) {
-            currentDemo = null
-            errorMessage = when (activeDemo) {
-                DemoDestination.AppointmentDetails -> context.getString(R.string.invalid_appointment_id)
-                DemoDestination.Chat -> context.getString(R.string.invalid_room_id)
-                else -> context.getString(R.string.unavailable_demo)
-            }
-            return
-        }
-
-        BackHandler {
-            currentDemo = null
-        }
-
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                activeSdk.sdkView(
-                    kind = viewKind,
-                    modifier = Modifier.fillMaxSize(),
-                    onClose = { currentDemo = null }
-                )
-            }
-        }
-        return
-    }
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(24.dp)
     ) {
-        Text(
-            text = stringResource(R.string.demo_title),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = stringResource(R.string.demo_subtitle_full),
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = apiKey,
-            onValueChange = { apiKey = it },
-            label = { Text(stringResource(R.string.api_key_label)) },
-            singleLine = true
-        )
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = userId,
-            onValueChange = { userId = it },
-            label = { Text(stringResource(R.string.user_id_label)) },
-            singleLine = true
-        )
-
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading && apiKey.isNotBlank() && userId.isNotBlank(),
-            onClick = ::loadSdk
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Text(
-                    if (sdk == null) {
-                        stringResource(R.string.initialize_sdk)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(
+                    if (activeSdk != null) {
+                        Modifier.verticalScroll(rememberScrollState())
                     } else {
-                        stringResource(R.string.reconnect_sdk)
+                        Modifier
                     }
+                ),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.demo_title),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = stringResource(R.string.demo_subtitle_full),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error
+                )
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading,
+                    onClick = {
+                        uiErrorMessage = null
+                        app.initializeSdkIfNeeded(forceRetry = true)
+                    }
+                ) {
+                    Text(stringResource(R.string.retry_sdk_initialization))
+                }
+            }
+
+            if (activeSdk != null) {
+                Text(
+                    text = stringResource(R.string.views),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                DemoDestination.entries.forEach { destination ->
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { openDemo(destination) }
+                    ) {
+                        Text(stringResource(destination.titleRes))
+                    }
+                }
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = appointmentId,
+                    onValueChange = { appointmentId = it },
+                    label = { Text(stringResource(R.string.appointment_id_label)) },
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = roomId,
+                    onValueChange = { roomId = it },
+                    label = { Text(stringResource(R.string.room_id_label)) },
+                    singleLine = true
                 )
             }
         }
 
-        errorMessage?.let {
-            Text(
-                text = it,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
-        if (activeSdk != null) {
-            Text(
-                text = stringResource(R.string.views),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            DemoDestination.entries.forEach { destination ->
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { currentDemo = destination }
-                ) {
-                    Text(stringResource(destination.titleRes))
-                }
+        if (activeSdk == null && isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = appointmentId,
-                onValueChange = { appointmentId = it },
-                label = { Text(stringResource(R.string.appointment_id_label)) },
-                singleLine = true
-            )
-
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = roomId,
-                onValueChange = { roomId = it },
-                label = { Text(stringResource(R.string.room_id_label)) },
-                singleLine = true
-            )
         }
     }
 }
@@ -369,7 +420,7 @@ private object DemoIncomingCallStore {
     }
 }
 
-private enum class DemoDestination(val titleRes: Int) {
+enum class DemoDestination(val titleRes: Int) {
     ProfessionalList(R.string.show_professional_list),
     MedicalHistory(R.string.show_medical_history),
     Allergies(R.string.show_allergies),
