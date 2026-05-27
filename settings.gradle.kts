@@ -19,7 +19,6 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
         maven { url = uri("https://mediquo.jfrog.io/artifactory/android-sdk") }
-        maven { url = uri("https://mediquo.jfrog.io/artifactory/videocall-android") }
     }
 }
 

@@ -1,26 +1,698 @@
 {
   "project_info": {
-    "project_number": "741655732040",
-    "project_id": "testsdkmq",
-    "storage_bucket": "testsdkmq.appspot.com"
+    "project_number": "339834009223",
+    "firebase_url": "https://meeting-doctors.firebaseio.com",
+    "project_id": "meeting-doctors",
+    "storage_bucket": "meeting-doctors.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:741655732040:android:4e7d3277c62c4425155d7d",
+        "mobilesdk_app_id": "1:339834009223:android:8e27644fbf7ac5a6",
         "android_client_info": {
-          "package_name": "com.example.mediquosdktest"
+          "package_name": "com.cnp.chatmedico"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBRk574Q4en66vGIKvI8rA-rVzw69292BM"
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:f62ff5425482f60a",
+        "android_client_info": {
+          "package_name": "com.evo.chatmedico"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:2ae4c9edce75cbf77aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.chat.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:ca18ec4399a930457aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.doctors"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-not51hotekfeq1cbgfb6cjjvnils2rmj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mediquo.doctors",
+            "certificate_hash": "6e0bcd7815358449befab22159a7f40e47377144"
+          }
+        },
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:c8c79e2982d79cab7aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.example.sdk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:d4f1e93a75318cc7",
+        "android_client_info": {
+          "package_name": "com.mediquo.example.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:a30e6f75f58042ab7aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.fake"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:b2fd846346bffe9c7aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.groups.admin.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:fe4d4a46ef128b0f7aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.groups.client.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:d87c519b696ee7e3",
+        "android_client_info": {
+          "package_name": "com.mediquo.main"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-t1eqa9ufg32ahbsei3l8f52tj07ticgv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mediquo.main",
+            "certificate_hash": "ccaf870a1e88fc8e44f6b3d521dd9899726a6f9b"
+          }
+        },
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:b2bbd1cd5da0a7557aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.main.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:122a0d59ae45e15e7aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.professional"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-uogtrh0h8hh72gr1omv6qnt894t0beda.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mediquo.professional",
+            "certificate_hash": "6e0bcd7815358449befab22159a7f40e47377144"
+          }
+        },
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:d32b24c25ea32abb7aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.professional.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:e832b7a2a08a51d77aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.sdk.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:8dc78af6b95f98707aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.sdk.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:cd3904f4d634d8657aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.videocall.admin.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:c1d152d807d090a77aea22",
+        "android_client_info": {
+          "package_name": "com.mediquo.videocall.client.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339834009223:android:26395cd110f41ca8",
+        "android_client_info": {
+          "package_name": "com.meetingdoctors.ophiuchus.groups.sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-zmUzvAkkkFPrEww5jYhBiDQ1e82e9Ig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339834009223-h688913bba7n2ju94e94e16hjvsgd2b1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339834009223-60vs07dighmths1cic6i9pqvku1s3ekt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mediquo.main",
+                "app_store_id": "1320968041"
+              }
+            }
+          ]
         }
       }
     }
