@@ -213,6 +213,9 @@ private fun SDKDemoApp(
     val validationErrorMessage = uiErrorMessage
     val sdkErrorMessage = sdkInitializationState.errorMessage
     val isLoading = sdkInitializationState.isLoading
+    val invalidAppointmentIdMessage = stringResource(R.string.invalid_appointment_id)
+    val invalidRoomIdMessage = stringResource(R.string.invalid_room_id)
+    val unavailableDemoMessage = stringResource(R.string.unavailable_demo)
 
     LaunchedEffect(activeSdk, eventDelegate) {
         activeSdk?.let {
@@ -233,9 +236,9 @@ private fun SDKDemoApp(
 
         if (!isInputValid) {
             uiErrorMessage = when (destination) {
-                DemoDestination.AppointmentDetails -> context.getString(R.string.invalid_appointment_id)
-                DemoDestination.Chat -> context.getString(R.string.invalid_room_id)
-                else -> context.getString(R.string.unavailable_demo)
+                DemoDestination.AppointmentDetails -> invalidAppointmentIdMessage
+                DemoDestination.Chat -> invalidRoomIdMessage
+                else -> unavailableDemoMessage
             }
             scope.launch {
                 scrollState.animateScrollTo(0)

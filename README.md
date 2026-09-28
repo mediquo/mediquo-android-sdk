@@ -6,12 +6,13 @@ This repository includes a sample app you can inspect to see a complete end-to-e
 
 ## Prerequisites
 
-- Android Studio Meerkat or later
-- Android Gradle Plugin `8.9.1` or later
-- Gradle `9.1` or later
-- Kotlin `2.2.0`
+- Android Studio Panda 3 (`2025.3.3 Patch 1`) or later
+- Android Gradle Plugin `9.1.1` or later
+- Gradle `9.3.1` or later
+- Kotlin `2.4.0`
+- JDK 17
 - `minSdk = 29`
-- `compileSdk = 36`
+- `compileSdk = 37`
 - `targetSdk = 36` recommended
 - Jetpack Compose enabled in your app
 - Firebase Cloud Messaging if you want push notifications
@@ -42,12 +43,14 @@ Example `gradle/libs.versions.toml` entries:
 ```toml
 [versions]
 mediquoSdk = "[LAST_VERSION]"
-kotlin = "2.2.0"
+agp = "9.1.1"
+kotlin = "2.4.0"
 
 [libraries]
 mediquo-sdk = { group = "com.mediquo", name = "mediquo-sdk", version.ref = "mediquoSdk" }
 
 [plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ```
 
@@ -58,14 +61,13 @@ In `app/build.gradle.kts`:
 ```kotlin
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.yourapp"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.yourapp"
@@ -81,10 +83,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 dependencies {
@@ -92,7 +90,22 @@ dependencies {
 }
 ```
 
-### 4. Add the Google Services plugin at project level
+AGP 9 provides built-in Kotlin support, so do not apply the
+`org.jetbrains.kotlin.android` plugin. The Java target configured above is also
+used as Kotlin's JVM target.
+
+### 4. Configure project-level plugins
+
+The SDK is compiled with Kotlin 2.4. Add the matching Kotlin Gradle plugin to
+the root build so AGP's built-in Kotlin compiler uses that version:
+
+```kotlin
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0")
+    }
+}
+```
 
 If you use Firebase, make sure the plugin is available in the root build:
 
@@ -554,9 +567,11 @@ If you need deeper theming or UI customization, please contact mediQuo or open a
 
 If Gradle reports that dependencies require newer Android APIs or a newer Android Gradle Plugin, make sure your app uses:
 
-- `compileSdk = 36`
-- Android Gradle Plugin `8.9.1` or newer
-- Kotlin `2.2.0`
+- Android Studio Panda 3 (`2025.3.3 Patch 1`) or newer
+- `compileSdk = 37`
+- Android Gradle Plugin `9.1.1` or newer
+- Gradle `9.3.1` or newer
+- Kotlin `2.4.0`
 
 ### Push token is never registered
 
