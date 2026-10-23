@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -40,7 +41,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,7 +63,7 @@ class MainActivity : ComponentActivity() {
         DemoIncomingCallStore.consumeFromIntent(intent)
 
         setContent {
-            MaterialTheme {
+            DemoTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     SDKDemoApp(onAskNotificationPermissions = ::askForNotificationPermissions)
                 }
@@ -106,7 +109,7 @@ class DemoHostActivity : ComponentActivity() {
         val sdk = (applicationContext as? App)?.currentSdk()
 
         setContent {
-            MaterialTheme {
+            DemoTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val viewKind = remember(destination, appointmentId, roomId) {
                         destination?.toViewKind(
@@ -178,6 +181,22 @@ class DemoHostActivity : ComponentActivity() {
 }
 
 @Composable
+private fun DemoTheme(content: @Composable () -> Unit) {
+    val accent = colorResource(R.color.colorAccent)
+    MaterialTheme(
+        colorScheme = lightColorScheme(
+            primary = accent,
+            onPrimary = Color.White,
+            secondary = accent,
+            onSecondary = Color.Black,
+            tertiary = accent,
+            onTertiary = Color.Black
+        ),
+        content = content
+    )
+}
+
+@Composable
 private fun SDKDemoApp(
     onAskNotificationPermissions: () -> Unit
 ) {
@@ -213,6 +232,9 @@ private fun SDKDemoApp(
     val validationErrorMessage = uiErrorMessage
     val sdkErrorMessage = sdkInitializationState.errorMessage
     val isLoading = sdkInitializationState.isLoading
+    val invalidAppointmentMessage = stringResource(R.string.invalid_appointment_id)
+    val invalidRoomMessage = stringResource(R.string.invalid_room_id)
+    val unavailableDemoMessage = stringResource(R.string.unavailable_demo)
 
     LaunchedEffect(activeSdk, eventDelegate) {
         activeSdk?.let {
@@ -233,9 +255,9 @@ private fun SDKDemoApp(
 
         if (!isInputValid) {
             uiErrorMessage = when (destination) {
-                DemoDestination.AppointmentDetails -> context.getString(R.string.invalid_appointment_id)
-                DemoDestination.Chat -> context.getString(R.string.invalid_room_id)
-                else -> context.getString(R.string.unavailable_demo)
+                DemoDestination.AppointmentDetails -> invalidAppointmentMessage
+                DemoDestination.Chat -> invalidRoomMessage
+                else -> unavailableDemoMessage
             }
             scope.launch {
                 scrollState.animateScrollTo(0)
@@ -437,6 +459,10 @@ private object DemoIncomingCallStore {
 
 enum class DemoDestination(val titleRes: Int) {
     ProfessionalList(R.string.show_professional_list),
+    Schedule(R.string.show_schedule),
+    NewAppointment(R.string.show_new_appointment),
+    ImmediateConsultations(R.string.show_immediate_consultations),
+    Documentation(R.string.show_documentation),
     MedicalHistory(R.string.show_medical_history),
     Allergies(R.string.show_allergies),
     Diseases(R.string.show_diseases),
@@ -462,6 +488,10 @@ private fun DemoDestination.toViewKind(
             )
         )
 
+        DemoDestination.Schedule -> MediQuo.ViewKind.Schedule
+        DemoDestination.NewAppointment -> MediQuo.ViewKind.NewAppointment
+        DemoDestination.ImmediateConsultations -> MediQuo.ViewKind.ImmediateConsultations
+        DemoDestination.Documentation -> MediQuo.ViewKind.Documentation
         DemoDestination.MedicalHistory -> MediQuo.ViewKind.MedicalHistory
         DemoDestination.Allergies -> MediQuo.ViewKind.Allergies
         DemoDestination.Diseases -> MediQuo.ViewKind.Diseases
