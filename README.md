@@ -6,12 +6,12 @@ This repository includes a sample app you can inspect to see a complete end-to-e
 
 ## Prerequisites
 
-- Android Studio Meerkat or later
-- Android Gradle Plugin `8.9.1` or later
-- Gradle `9.1` or later
-- Kotlin `2.2.0`
+- Android Studio with support for Android Gradle Plugin `9.1.1`
+- Android Gradle Plugin `9.1.1` or later
+- Gradle `9.3.1` or later
+- Kotlin `2.4.0`
 - `minSdk = 29`
-- `compileSdk = 36`
+- `compileSdk = 37`
 - `targetSdk = 36` recommended
 - Jetpack Compose enabled in your app
 - Firebase Cloud Messaging if you want push notifications
@@ -42,7 +42,7 @@ Example `gradle/libs.versions.toml` entries:
 ```toml
 [versions]
 mediquoSdk = "[LAST_VERSION]"
-kotlin = "2.2.0"
+kotlin = "2.4.0"
 
 [libraries]
 mediquo-sdk = { group = "com.mediquo", name = "mediquo-sdk", version.ref = "mediquoSdk" }
@@ -53,19 +53,20 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 
 ### 3. Add plugins and dependencies to your app module
 
+Android Gradle Plugin 9 includes Kotlin support. Apply the Compose compiler plugin, but do not apply `org.jetbrains.kotlin.android`.
+
 In `app/build.gradle.kts`:
 
 ```kotlin
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.yourapp"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.yourapp"
@@ -81,10 +82,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 dependencies {
@@ -92,7 +89,21 @@ dependencies {
 }
 ```
 
-### 4. Add the Google Services plugin at project level
+### 4. Configure Kotlin and Google Services at project level
+
+The SDK is compiled with Kotlin `2.4.0`. Override AGP's built-in Kotlin Gradle plugin version in the root build:
+
+```kotlin
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0")
+    }
+}
+```
 
 If you use Firebase, make sure the plugin is available in the root build:
 
@@ -241,6 +252,9 @@ These are the main entry points you can open through `MediQuo.ViewKind`:
 
 ```kotlin
 MediQuo.ViewKind.ProfessionalList()
+MediQuo.ViewKind.Schedule
+MediQuo.ViewKind.NewAppointment
+MediQuo.ViewKind.ImmediateConsultations
 MediQuo.ViewKind.AppointmentsDetails(appointmentId = "123")
 MediQuo.ViewKind.Chat(roomId = 123)
 MediQuo.ViewKind.MedicalHistory
@@ -544,7 +558,19 @@ Replace `your.package.name` with your real application id:
 
 ## Customization
 
-The SDK uses the host app theme and its own internal design tokens. The most common customization point exposed to integrators today is the optional support button in `ProfessionalList`.
+The SDK reads `android:colorAccent` from the host application's XML theme. This sample configures it in `app/src/main/res/values/themes.xml`:
+
+```xml
+<style name="Theme.MediquoSdkTest" parent="android:Theme.Material.Light.NoActionBar">
+    <item name="android:colorAccent">@color/colorAccent</item>
+</style>
+```
+
+Change `colorAccent` in `app/src/main/res/values/colors.xml` (currently `#63BE21`) to customize the SDK's brand color. You can optionally override that resource in `res/values-night/colors.xml` for dark mode. The demo Compose theme also reads `colorAccent`, so both the demo and the SDK use the same source. The SDK derives its soft and subtle brand variants automatically.
+
+The theme is applied to the application and both demo activities, so the accent is available to SDK content across Compose, Activity, and Fragment entry points. Setting only Compose's `MaterialTheme` colors does not configure the SDK accent. No color argument is needed in `MediQuo.create(...)`.
+
+Explicit component color overrides, such as the optional support button's `backgroundColor` in `ProfessionalList`, take priority over the theme accent.
 
 If you need deeper theming or UI customization, please contact mediQuo or open an issue in the repository.
 
@@ -554,9 +580,9 @@ If you need deeper theming or UI customization, please contact mediQuo or open a
 
 If Gradle reports that dependencies require newer Android APIs or a newer Android Gradle Plugin, make sure your app uses:
 
-- `compileSdk = 36`
-- Android Gradle Plugin `8.9.1` or newer
-- Kotlin `2.2.0`
+- `compileSdk = 37`
+- Android Gradle Plugin `9.1.1` or newer
+- Kotlin `2.4.0`
 
 ### Push token is never registered
 

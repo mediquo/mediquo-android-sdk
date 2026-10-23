@@ -12,6 +12,10 @@
     <string name="retry_sdk_initialization">Retry SDK initialization</string>
     <string name="views">Views</string>
     <string name="show_professional_list">Show professional list</string>
+    <string name="show_schedule">Show agenda</string>
+    <string name="show_new_appointment">Show New Consultation</string>
+    <string name="show_immediate_consultations">Show Immediate Consultation</string>
+    <string name="show_documentation">Show documentation</string>
     <string name="show_medical_history">Show medical history</string>
     <string name="show_allergies">Show allergies</string>
     <string name="show_diseases">Show diseases</string>
